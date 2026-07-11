@@ -19,7 +19,7 @@ class LLMProvider(Protocol):
         model: str,
         messages: List[Dict[str, str]],
         options: Dict[str, Any] = None,
-        **kwargs
+        **kwargs,
     ) -> Dict[str, Any]:
         """Send a chat request to the LLM provider."""
         ...
@@ -241,10 +241,33 @@ class Deductions(BaseModel):
     reasons: str = Field(description="Reasons for deductions")
 
 
+class RoleFitScore(BaseModel):
+    score: float = Field(
+        ge=0, le=100, description="Overall fit score for the role out of 100"
+    )
+    justification: str = Field(
+        description="Brief justification of the fit score based on skills and experience"
+    )
+
+
+class MarketRoleFit(BaseModel):
+    backend_engineer: RoleFitScore = Field(
+        description="Fit details for a Backend Software Engineer role"
+    )
+    devops_sre: RoleFitScore = Field(description="Fit details for a DevOps/SRE role")
+    ml_engineer: RoleFitScore = Field(
+        description="Fit details for a Machine Learning/AI Engineer role"
+    )
+    frontend_developer: RoleFitScore = Field(
+        description="Fit details for a Frontend Software Developer role"
+    )
+
+
 class EvaluationData(BaseModel):
     scores: Scores
     bonus_points: BonusPoints
     deductions: Deductions
+    role_fit: Optional[MarketRoleFit] = None
     key_strengths: List[str] = Field(min_items=1, max_items=5)
     areas_for_improvement: List[str] = Field(min_items=1, max_items=5)
 
@@ -281,7 +304,7 @@ class OllamaProvider:
         model: str,
         messages: List[Dict[str, str]],
         options: Dict[str, Any] = None,
-        **kwargs
+        **kwargs,
     ) -> Dict[str, Any]:
         """Send a chat request to Ollama."""
 
@@ -324,7 +347,7 @@ class GeminiProvider:
         model: str,
         messages: List[Dict[str, str]],
         options: Dict[str, Any] = None,
-        **kwargs
+        **kwargs,
     ) -> Dict[str, Any]:
         """Send a chat request to Google Gemini API."""
         import re
@@ -375,7 +398,7 @@ class GeminiProvider:
                 api_hint = float(match.group(1)) if match else None
 
                 # Exponential backoff: BASE_DELAY * 2^attempt, capped at MAX_DELAY
-                exp_delay = min(BASE_DELAY * (2 ** attempt), MAX_DELAY)
+                exp_delay = min(BASE_DELAY * (2**attempt), MAX_DELAY)
 
                 # Prefer the API hint when it is shorter than our computed delay
                 delay = api_hint if (api_hint and api_hint < exp_delay) else exp_delay

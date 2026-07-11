@@ -156,6 +156,22 @@ def print_evaluation_results(
         for i, area in enumerate(evaluation.areas_for_improvement, 1):
             print(f"  {i}. {area}")
 
+    # Market Role Fit Analysis
+    if hasattr(evaluation, "role_fit") and evaluation.role_fit:
+        print(f"\n💼 MARKET ROLE FIT ANALYSIS:")
+        print("-" * 30)
+        rf = evaluation.role_fit
+        roles = [
+            ("Backend Engineer", rf.backend_engineer),
+            ("DevOps / SRE", rf.devops_sre),
+            ("ML / AI Engineer", rf.ml_engineer),
+            ("Frontend Developer", rf.frontend_developer),
+        ]
+        for role_name, fit_score in roles:
+            if fit_score:
+                print(f"  🔹 {role_name:<20} : {fit_score.score:.1f}/100.0")
+                print(f"     Justification: {fit_score.justification}")
+
     print("\n" + "=" * 80)
 
 

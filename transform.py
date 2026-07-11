@@ -738,6 +738,39 @@ def transform_evaluation_response(
     else:
         csv_row["areas_for_improvement"] = ""
 
+    # Extract role fit scores
+    if evaluation and hasattr(evaluation, "role_fit") and evaluation.role_fit:
+        rf = evaluation.role_fit
+        csv_row["backend_fit_score"] = (
+            rf.backend_engineer.score if rf.backend_engineer else "N/A"
+        )
+        csv_row["backend_fit_justification"] = (
+            rf.backend_engineer.justification if rf.backend_engineer else ""
+        )
+        csv_row["devops_fit_score"] = rf.devops_sre.score if rf.devops_sre else "N/A"
+        csv_row["devops_fit_justification"] = (
+            rf.devops_sre.justification if rf.devops_sre else ""
+        )
+        csv_row["ml_fit_score"] = rf.ml_engineer.score if rf.ml_engineer else "N/A"
+        csv_row["ml_fit_justification"] = (
+            rf.ml_engineer.justification if rf.ml_engineer else ""
+        )
+        csv_row["frontend_fit_score"] = (
+            rf.frontend_developer.score if rf.frontend_developer else "N/A"
+        )
+        csv_row["frontend_fit_justification"] = (
+            rf.frontend_developer.justification if rf.frontend_developer else ""
+        )
+    else:
+        csv_row["backend_fit_score"] = "N/A"
+        csv_row["backend_fit_justification"] = ""
+        csv_row["devops_fit_score"] = "N/A"
+        csv_row["devops_fit_justification"] = ""
+        csv_row["ml_fit_score"] = "N/A"
+        csv_row["ml_fit_justification"] = ""
+        csv_row["frontend_fit_score"] = "N/A"
+        csv_row["frontend_fit_justification"] = ""
+
     return csv_row
 
 
